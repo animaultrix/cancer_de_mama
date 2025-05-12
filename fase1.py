@@ -34,12 +34,18 @@ train_datagen = ImageDataGenerator(
 valid_datagen = ImageDataGenerator(preprocessing_function=keras.applications.efficientnet.preprocess_input)
 test_datagen  = ImageDataGenerator(preprocessing_function=keras.applications.efficientnet.preprocess_input)
 
-train_gen = train_datagen.flow_from_directory(train_dir, target_size=target_size, batch_size=batch_size,
-                                              class_mode='binary', shuffle=True, seed=seed)
-valid_gen = valid_datagen.flow_from_directory(valid_dir, target_size=target_size, batch_size=batch_size,
-                                              class_mode='binary', shuffle=False)
-test_gen  = test_datagen.flow_from_directory(test_dir,  target_size=target_size, batch_size=batch_size,
-                                             class_mode='binary', shuffle=False)
+train_gen = train_datagen.flow_from_directory(
+    train_dir, target_size=target_size, batch_size=batch_size,
+    class_mode='binary', shuffle=True, seed=seed, color_mode='rgb')                 # <<< ‘binary’
+valid_gen = valid_datagen.flow_from_directory(
+    valid_dir, target_size=target_size, batch_size=batch_size,
+    class_mode='binary', shuffle=False,
+    color_mode='rgb')
+test_gen = test_datagen.flow_from_directory(
+    test_dir,  target_size=target_size, batch_size=batch_size,
+    class_mode='binary', shuffle=False,
+    color_mode='rgb')
+
 
 # ─── Class Weights ─────────────────────────────────────────────────
 y_train = train_gen.classes
