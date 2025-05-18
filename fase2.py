@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.utils.class_weight import compute_class_weight
 
 # ─── Parámetros ─────────────────────────────────────────────────────
-version = "2"
+version = "3"
 target_size = (512, 512)
 batch_size = 16
 seed = 42

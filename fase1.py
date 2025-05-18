@@ -52,8 +52,16 @@ backbone = EfficientNetB3(weights='imagenet', include_top=False, input_shape=(*t
 #backbone.trainable = False
 
 # Congela hasta la capa 260
-for i, layer in enumerate(backbone.layers):
-    layer.trainable = i >= 260
+#for i, layer in enumerate(backbone.layers):
+#    layer.trainable = i >= 1
+
+start_training = False
+
+for layer in backbone.layers:
+    if layer.name == 'block7a_expand_conv':
+        start_training = True
+    layer.trainable = start_training
+
 
 inp = layers.Input(shape=(*target_size, 3))
 x = backbone(inp, training=True)
@@ -65,7 +73,7 @@ out = layers.Dense(2, activation='softmax')(x)
 model = models.Model(inp, out)
 
 model.compile(
-    optimizer=Adam(1e-1),
+    optimizer=Adam(1e-2),
     loss='categorical_crossentropy',
     metrics=['accuracy', keras.metrics.Recall(name='recall_pos'), keras.metrics.AUC(name='auc')]
 )
@@ -74,15 +82,21 @@ model.compile(
 logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 cbs1 = [
     EarlyStopping('val_loss', patience=8, restore_best_weights=True),
-    ReduceLROnPlateau('val_loss', factor=0.5, patience=3, min_lr=1e-6),
-    ModelCheckpoint(r'C:\Develop\IA\cancer_de_mama\models\effb3_best_v3.h5', monitor='val_loss', save_best_only=True, save_weights_only=True),
+    ReduceLROnPlateau('val_loss', factor=0.5, patience=5, min_lr=1e-6),
+    ModelCheckpoint(r'C:\Develop\IA\cancer_de_mama\models\effb3_best_weights_v3.h5', monitor='val_loss', save_best_only=True, save_weights_only=True),
     #TensorBoard(log_dir=logdir, histogram_freq=1)
 ]
 
 # ─── Entrenamiento Fase 1 ───────────────────────────────────────────
-model.fit(train_gen, validation_data=valid_gen, epochs=21, callbacks=cbs1, verbose=1)
+model.fit(train_gen, validation_data=valid_gen, epochs=101, callbacks=cbs1, verbose=1)
 
-model.save(r'C:\Develop\IA\cancer_de_mama\models\last_fase1.h5')
+# Crea la carpeta si no existe
+os.makedirs(r'C:\Develop\IA\cancer_de_mama\models', exist_ok=True)
+
+# --- Guardado sin trazas (Windows friendly) ---
+model.save_weights(
+    r'C:\Develop\IA\cancer_de_mama\models\last_fase1_v3.weights.h5')
+
 
 # ─── Evaluación Fase 1 ──────────────────────────────────────────────
 loss, acc, recall, auc = model.evaluate(test_gen, verbose=0)
