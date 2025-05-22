@@ -4,6 +4,47 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import joblib
 
+# ─── Rutas y parámetros necesarios ─────────────────────────────────────
+target_size = (512, 512)
+train_dir = r'C:\Develop\IA\cancer_de_mama\dataset\cancer_de_mama_edit_3\train'
+valid_dir = r'C:\Develop\IA\cancer_de_mama\dataset\cancer_de_mama_edit_3\valid'
+test_dir  = r'C:\Develop\IA\cancer_de_mama\dataset\cancer_de_mama_edit_3\test'
+
+batch_size = 16
+seed = 42
+
+
+# ─── Reconstruir arquitectura EXACTA ─────────────────────────────────
+backbone = EfficientNetB3(weights='imagenet', include_top=False, input_shape=(*target_size, 3))
+
+# Congelar parcialmente como hiciste en fase 1
+start_training = False
+for layer in backbone.layers:
+    if layer.name == 'block7a_expand_conv':
+        start_training = True
+    layer.trainable = start_training
+
+inp = layers.Input(shape=(*target_size, 3))
+x = backbone(inp, training=True)
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.Dense(512, activation='relu', name='feature_dense')(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.2)(x)
+out = layers.Dense(2, activation='softmax')(x)
+
+model = models.Model(inp, out)
+
+# Compilar antes de cargar pesos (por capas como BatchNorm)
+model.compile(
+    optimizer=Adam(1e-2),
+    loss='categorical_crossentropy',
+    metrics=['accuracy', keras.metrics.Recall(name='recall_pos'), keras.metrics.AUC(name='auc')]
+)
+
+# ─── Cargar los pesos entrenados en fase 1 ──────────────────────────
+model.load_weights(r'C:\Develop\IA\cancer_de_mama\models\last_fase1_v3.weights.h5')
+print("✅ Pesos de Fase 1 cargados correctamente.")
+
 # ─── Crear extractor desde la capa que te interese ──────────────────────────
 feature_extractor = Model(
     inputs=model.input,

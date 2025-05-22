@@ -66,7 +66,7 @@ for layer in backbone.layers:
 inp = layers.Input(shape=(*target_size, 3))
 x = backbone(inp, training=True)
 x = layers.GlobalAveragePooling2D()(x)
-x = layers.Dense(512, activation='relu', name='feature_dense')(x)#x = layers.Dense(512, activation='relu', kernel_regularizer=keras.regularizers.l2(1e-4))(x)
+x = layers.Dense(512, activation='relu')(x)#x = layers.Dense(512, activation='relu', kernel_regularizer=keras.regularizers.l2(1e-4))(x)
 x = layers.BatchNormalization()(x)
 x = layers.Dropout(0.2)(x)
 out = layers.Dense(2, activation='softmax')(x)
