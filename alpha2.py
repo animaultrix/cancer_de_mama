@@ -57,11 +57,11 @@ X_train, X_valid, y_train, y_valid = train_test_split(
 # ╚═══════════════════════════════════════╝
 print("🔄 Aplicando PCA para reducir dimensiones...")
 pca = PCA(n_components=PCA_COMPONENTS, random_state=SEED)
+model = SVC(kernel='linear', probability=True, verbose=True)
 X_train_pca = pca.fit_transform(X_train)
 X_valid_pca = pca.transform(X_valid)
 
 print("🔧 Entrenando modelo SVM...")
-model = SVC(kernel='linear', probability=True, verbose=True)
 model.fit(X_train_pca, y_train)
 
 # ╔═══════════════════════════════════════╗
