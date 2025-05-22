@@ -91,4 +91,3 @@ test_pred = svm.predict(features_test)
 test_acc = accuracy_score(y_test, test_pred)
 print(f"🎯 Test Accuracy SVM: {test_acc:.4f}")
 joblib.dump(svm, 'svm_classifier_v3.joblib')
-# fase3
