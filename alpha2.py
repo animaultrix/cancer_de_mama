@@ -87,3 +87,4 @@ if LOCAL_TEST.exists():
     y_test_pred = model.predict(X_test_pca)
     print(f"\n🧪 Accuracy en TEST: {accuracy_score(y_test, y_test_pred):.4f}")
     print(classification_report(y_test, y_test_pred, target_names=class_names))
+    # Save test predictions
