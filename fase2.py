@@ -83,3 +83,4 @@ model.save('models/last_fase2.keras')
 # ─── Evaluación final ───────────────────────────────────────────────
 loss, acc, recall, auc = model.evaluate(test_gen, verbose=0)
 print(f"\nTest → Acc: {acc:.3f} | Recall (+): {recall:.3f} | AUC: {auc:.3f}")
+# fase2

@@ -101,3 +101,4 @@ model.save_weights(
 # ─── Evaluación Fase 1 ──────────────────────────────────────────────
 loss, acc, recall, auc = model.evaluate(test_gen, verbose=0)
 print(f"\nTest → Acc: {acc:.3f} | Recall (+): {recall:.3f} | AUC: {auc:.3f}")
+# fase1
